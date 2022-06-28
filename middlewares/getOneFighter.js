@@ -10,14 +10,10 @@ const getOneFighter = (req, res, next) => {
 
   db.query(getOneFighterQuery)
     .then((data) => {
-      // res.json(data.rows)
-
-      // exit if the fighter does not exist
       if (!data.rows.length) {
         return res.status(404).send("This fighter does not exist!");
       }
 
-      // if the fighter exists, then attach the information on the request object
       req.fighter = data.rows[0];
       next();
     })
