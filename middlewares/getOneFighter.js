@@ -17,7 +17,7 @@ const getOneFighter = (req, res, next) => {
       req.fighter = data.rows[0];
       next();
     })
-    .catch((error) => res.sendStatus(500));
+    .catch((error) => next(error));
 };
 
 module.exports = getOneFighter;

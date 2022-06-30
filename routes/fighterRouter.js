@@ -23,18 +23,19 @@ fighterRouter
   .put([authorization, getOneFighter])
   .get(getOneFighter);
 
-fighterRouter.get("/", (req, res) => {
+fighterRouter.get("/", (req, res, next) => {
   db.query("SELECT * FROM fighters ORDER BY id ASC;")
     .then((data) => res.json(data.rows))
-    .catch((error) => res.sendStatus(500));
+    .catch((error) => next(error));
 });
 
-fighterRouter.get("/:id", (req, res) => {
+fighterRouter.get("/:id", (req, res, next) => {
+  // return next(new Error("Baaaaaaaaaaam"));
   res.json(req.fighter);
 });
 
 // You can "mount" a middleware on a specific path + method directly:
-fighterRouter.post("/", authorization, fighterValidators, (req, res) => {
+fighterRouter.post("/", authorization, fighterValidators, (req, res, next) => {
   const { first_name, last_name, country_id, style } = req.body;
 
   const errors = validationResult(req);
@@ -56,7 +57,7 @@ fighterRouter.post("/", authorization, fighterValidators, (req, res) => {
 
   db.query(createOneFighter)
     .then((data) => res.status(201).json(data.rows[0]))
-    .catch((error) => res.sendStatus(500));
+    .catch((error) => next(error));
 });
 
 fighterRouter.put("/:id", fighterValidators, (req, res, next) => {
@@ -85,10 +86,10 @@ fighterRouter.put("/:id", fighterValidators, (req, res, next) => {
 
   db.query(updateOneFighter)
     .then((data) => res.json(data.rows[0]))
-    .catch((e) => res.status(500).send(e.message));
+    .catch((error) => next(error));
 });
 
-fighterRouter.delete("/:id", (req, res) => {
+fighterRouter.delete("/:id", (req, res, next) => {
   const { id } = req.params;
 
   const deadFighter = {
@@ -100,7 +101,7 @@ fighterRouter.delete("/:id", (req, res) => {
     .then((data) => {
       res.json(data.rows[0]);
     })
-    .catch((e) => res.status(500).send(e.message));
+    .catch((error) => next(error));
 });
 
 module.exports = fighterRouter;
